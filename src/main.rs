@@ -1,4 +1,4 @@
-#![cfg_attr(release, windows_subsystem = "windows")]
+#![cfg_attr(all(not(debug_assertions), target_os = "windows"), windows_subsystem = "windows")]
 
 use std::time::Instant;
 
@@ -7,7 +7,7 @@ use wgpu::util::DeviceExt;
 use winit::{
     event::*,
     event_loop::EventLoop,
-    window::{WindowBuilder, Window, Fullscreen}, monitor::VideoMode,
+    window::{WindowBuilder, Window, Fullscreen},
 };
 
 use bytemuck::{Pod, Zeroable};
@@ -384,6 +384,9 @@ use clap::Parser;
 struct Args {
     #[arg(short, long, default_value_t = 10_000)]
     count: u32,
+
+    #[arg(short, long, default_value_t = false)]
+    background: bool,
 }
 
 async fn run() {
@@ -394,7 +397,7 @@ async fn run() {
     let window = WindowBuilder::new()
         .with_transparent(true)
         .with_fullscreen(Some(Fullscreen::Borderless(None)))
-        .with_always_on_top(true)
+        .with_always_on_top(!args.background)
         .with_decorations(false)
         .with_title("snow")
         .build(&event_loop).unwrap();
